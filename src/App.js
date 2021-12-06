@@ -1,50 +1,52 @@
-// import components
-import AllPosts from "./pages/AllPosts"
-import SinglePost from "./pages/SinglePost"
-import Form from "./pages/Form"
+// Import Our Components
+import AllPosts from "./pages/AllPosts";
+import SinglePost from "./pages/SinglePost";
+import Form from "./pages/Form";
 
-// import hooks from react
+// Import Hooks from React
+import { useState, useEffect } from "react";
 
-import { useState, useEffect } from "react"
+// Import Router 6 Component (Route -> Route, Switch -> Routes)
+import { Route, Routes, Link, useNavigate } from "react-router-dom";
 
-// import router 6 component (Route -> Route, Switch -> Routes)
-import { Route, Routes, Link, useNavigate } from "react-router-dom"
-
-
-// STYLE OBJECT 
+/////////////////////////
+// Style Object
+/////////////////////////
 const h1 = {
   textAlign: "center",
-  margin: "10px"
-}
+  margin: "10px",
+};
 
 const button = {
   backgroundColor: "navy",
   display: "block",
-  margin: "auto"
-}
-
-
+  margin: "auto",
+};
 
 function App() {
+  ///////////////////////////
+  // State and Other Variables
+  ///////////////////////////
 
-  // STATE AND OTHER VARIABLES
+  const navigate = useNavigate();
 
-  const navigate = useNavigate()
-
-  const url = "https://penguin-todo-backend.herokuapp.com/todos/"
+  const url = "https://penguin-todo-backend.herokuapp.com/todos/";
 
   // state to hold list of todos
-  const [posts, setPosts] = useState([])
+  const [posts, setPosts] = useState([]);
 
   // an empty todo for initializing the create form
   const nullTodo = {
     subject: "",
-    details: ""
-  }
+    details: "",
+  };
 
-  const [targetTodo, setTargetTodo] = useState(nullTodo)
+  const [targetTodo, setTargetTodo] = useState(nullTodo);
 
-  // FUNCTIONS /////////////
+  //////////////
+  // Functions
+  //////////////
+
   // function to get list of todos from API
   const getTodos = async () => {
     const response = await fetch(url);
@@ -54,38 +56,37 @@ function App() {
 
   // function to add todos
   const addTodos = async (newTodo) => {
-    const response = await fetch(url, {
+    await fetch(url, {
       method: "post",
       headers: {
-        "Content-Type": "application/json"
+        "Content-Type": "application/json",
       },
-      body: JSON.stringify(newTodo)
+      body: JSON.stringify(newTodo),
     });
 
-    // update the list of todos
-    getTodos()
-  }
+    //update the list of todos
+    getTodos();
+  };
 
-  // select a todo to edit
+  // to select a todo to edit
   const getTargetTodo = (todo) => {
-    setTargetTodo(todo)
-    navigate("/edit")
-  }
+    setTargetTodo(todo);
+    navigate("/edit");
+  };
 
   // update todo for our handlesubmit prop
   const updateTodo = async (todo) => {
     await fetch(url + todo.id, {
       method: "put",
       headers: {
-        "Content-Type": "application/json"
-
+        "Content-Type": "application/json",
       },
-      body: JSON.stringify(todo)
-    })
+      body: JSON.stringify(todo),
+    });
 
-    // update our todos
-    getTodos()
-  }
+    //update our todos
+    getTodos();
+  };
 
   const deleteTodo = async (todo) => {
     await fetch(url + todo.id, {
@@ -96,19 +97,25 @@ function App() {
     navigate("/")
   }
 
+  //////////////
   // useEffects
+  //////////////
+
   useEffect(() => {
-    getTodos()
-  }, [])
+    getTodos();
+  }, []);
 
-
-
+  //////////////////////////
   // Returned JSX
+  //////////////////////////
 
   return (
     <div className="App">
       <h1 style={h1}>My Todo List</h1>
-      <Link to="/new"><button style={button}>Create New Todo</button></Link>
+      <Link to="/new">
+        <button style={button}>Create New Todo</button>
+      </Link>
+
       <Routes>
         <Route path="/" element={<AllPosts posts={posts} />} />
         <Route path="/post/:id" element={<SinglePost 
@@ -116,15 +123,20 @@ function App() {
         edit={getTargetTodo}
         deleteTodo={deleteTodo}
         />} />
-        <Route path="/new" element={<Form
-          initialTodo={nullTodo}
-          handleSubmit={addTodos}
-          buttonLabel="Create To-Do"
-        />} />
-        <Route path="/edit" element={<Form 
-        initialTodo={targetTodo}
-        handleSubmit={updateTodo}
-        buttonLabel="Update To-Do"
+        <Route
+          path="/new"
+          element={
+            <Form
+              initialTodo={nullTodo}
+              handleSubmit={addTodos}
+              buttonLabel="Create Todo"
+            />
+          }
+        />
+        <Route path="/edit" element={<Form
+          initialTodo={targetTodo}
+          handleSubmit={updateTodo}
+          buttonLabel="Update Todo"
         />} />
       </Routes>
     </div>
